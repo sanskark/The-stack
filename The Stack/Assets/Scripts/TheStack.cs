@@ -9,11 +9,11 @@ public class TheStack : MonoBehaviour
     public Text scoreText;
     public Text scoreTextAtEnd;
 
-    public Material black, white;
+    Material mat1, mat2;
 
     public GameObject endGameObject;
 
-    public int highScore = 0;
+    public int highScore;
     public int score = 0;
 
     private const float BOUNDS_SIZE = 3.5f;
@@ -44,14 +44,19 @@ public class TheStack : MonoBehaviour
     void Start()
     {
         theStack = new GameObject[transform.childCount];
-        for(int i=0; i<transform.childCount; i++)
+        ChangeMaterials();
+        for (int i=0; i<transform.childCount; i++)
         {
             theStack[i] = transform.GetChild(i).gameObject;
+            if (i % 2 == 0)
+                theStack[i].GetComponent<MeshRenderer>().material = mat1;
+            else
+                theStack[i].GetComponent<MeshRenderer>().material = mat2;
         }
         stackIndex = transform.childCount - 1;
         lastTilePosition = transform.GetChild(0).localPosition;
 
-        PlayerPrefs.SetInt("highScore", highScore);
+        highScore = PlayerPrefs.GetInt("highScore");
     }
 
 
@@ -151,7 +156,7 @@ public class TheStack : MonoBehaviour
                 CreateRubble(new Vector3((t.position.x > 0)
                     ? t.position.x + (t.localScale.x/2)
                     : t.position.x - (t.localScale.x / 2), t.position.y, t.position.z),
-                             new Vector3(Mathf.Abs(deltaX), 1f, t.localScale.z), white);
+                             new Vector3(Mathf.Abs(deltaX), 1f, t.localScale.z), mat2);
 
                 t.localPosition = new Vector3(middle - (lastTilePosition.x /2), scoreCount, lastTilePosition.z);
             }
@@ -189,7 +194,7 @@ public class TheStack : MonoBehaviour
                 CreateRubble(new Vector3(t.position.x, t.position.y, (t.position.z > 0)
                     ? t.position.z + (t.localScale.z / 2)
                     : t.position.z - (t.localScale.z / 2)),
-                             new Vector3(t.localScale.x, 1f, Mathf.Abs(deltaZ)), black);
+                             new Vector3(t.localScale.x, 1f, Mathf.Abs(deltaZ)), mat1);
 
                 t.localPosition = new Vector3(lastTilePosition.x, scoreCount, middle - (lastTilePosition.z / 2));
             }
@@ -217,10 +222,12 @@ public class TheStack : MonoBehaviour
 
         score++;
         scoreText.text = score.ToString();
+
         PlayerPrefs.SetInt("score", score);
-        if (score > highScore)
+        if (score >= highScore)
         {
             PlayerPrefs.SetInt("highScore", score);
+            highScore = score;
         }
         return true;
     }
@@ -234,5 +241,12 @@ public class TheStack : MonoBehaviour
 
         if(theStack[stackIndex].GetComponent<Rigidbody>() == null)
             theStack[stackIndex].AddComponent<Rigidbody>();
+    }
+
+    private void ChangeMaterials()
+    {
+        Theme theme = GameDataManager.GetSelectedTheme();
+        mat1 = theme.mat1;
+        mat2 = theme.mat2;
     }
 }

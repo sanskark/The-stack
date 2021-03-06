@@ -8,19 +8,16 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
-    public Text highSore;
+    
 
     private void Awake()
     {
         instance = this;
-        if (PlayerPrefs.HasKey("highScore"))
-        {
-            highSore.text = PlayerPrefs.GetInt("highScore").ToString();
-        }
+        
     }
     public void StartGame()
     {
-        SceneManager.LoadScene(1);
+        SceneManager.LoadSceneAsync(1);
     }
 
     public void QuitGame()
