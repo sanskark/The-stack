@@ -1,2 +1,3 @@
-# The-Stack
- The stack clone
+### The-Stack
+
+> The stack clone
